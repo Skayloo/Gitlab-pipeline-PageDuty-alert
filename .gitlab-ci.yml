@@ -1,0 +1,61 @@
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+build:
+  stage: build
+  script:
+    - echo "build simulation"
+    - exit 0
+  allow_failure: false
+
+test:
+  stage: test
+  script:
+    - echo "test simulation"
+    - exit 0
+  when: on_success
+  allow_failure: false
+
+release:
+  stage: release
+  script:
+    - echo "release simulation"
+    - exit 0
+  when: on_success
+  allow_failure: false
+
+deploy:
+  stage: deploy
+  script:
+    - echo "deploy simulation with an error"
+    - exit 1
+  when: on_success
+  allow_failure: false
+
+notifier:
+  stage: .post
+  script:
+    - |
+      curl -X POST \
+        -H "Authorization: Token token=$PAGERDUTY_API_KEY" \
+        -H "Content-Type: application/json" \
+        -H "From: $PAGERDUTY_FROM_EMAIL" \
+        -d '{
+          "incident": {
+            "type": "incident",
+            "title": "Ошибка в '$CI_JOB_STAGE' в GitLab",
+            "service": {
+              "id": "'$PAGERDUTY_SERVICE_ID'",
+              "type": "service_reference"
+            },
+            "body": {
+              "type": "incident_body",
+              "details": "Ошибка на этапе '$CI_JOB_STAGE' при выполнении пайплайна."
+            }
+          }
+        }' \
+        https://api.pagerduty.com/incidents
+  when: on_failure

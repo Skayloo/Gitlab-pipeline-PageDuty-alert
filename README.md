@@ -1,0 +1,3 @@
+#Pipeline
+
+Все переменные PAGERDUTY_API_KEY/PAGERDUTY_SERVICE_ID/PAGERDUTY_FROM_EMAIL скрыты в gitlab secrtes
